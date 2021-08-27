@@ -26,7 +26,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		NULL,       // 父级窗口
 		NULL,       // 菜单
 		hInstance,  // 窗口实例句柄
-		NULL        // 额外需要传递窗口过程的数据指针
+		nullptr        // 额外需要传递窗口过程的数据指针
 	);
 
 	if (hwnd == NULL)
@@ -39,10 +39,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 
 	// 处理窗口信息
 	MSG msg = { };
-	while (GetMessage(&msg, NULL, 0, 0))  // 从消息队列中拉去消息
+	while (msg.message != WM_QUIT)
 	{
-		TranslateMessage(&msg);  // 输入转换
-		DispatchMessage(&msg);  // 分发消息
+		while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))  // 从消息队列中拉去消息
+		{
+			TranslateMessage(&msg);  // 输入转换
+			DispatchMessage(&msg);  // 分发消息
+		}
 	}
 
 	return 0;
