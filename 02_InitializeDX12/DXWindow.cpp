@@ -2,12 +2,12 @@
 #define UNICODE
 #endif // !UNICODE
 
-#include "SimpleWindow.h"
+#include "DXWindow.h"
 
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
 	// 声明窗口类
-	const wchar_t CLASS_NAME[] = L"Sample Window Class";
+	const wchar_t CLASS_NAME[] = L"DX12 Class";
 
 	WNDCLASSEX wc = { };
 	wc.cbSize = sizeof(WNDCLASSEX);  // 窗口类结构体的内存大小
@@ -29,7 +29,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	HWND hwnd = CreateWindowEx(
 		WS_EX_LEFT,   // 窗口可选行为 (https://docs.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)
 		CLASS_NAME,        // 要创建窗口类的名称
-		L"Simple Window",    // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
+		L"DX12 Window",    // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
 		WS_OVERLAPPEDWINDOW,      // 窗口样式 (https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles)
 		CW_USEDEFAULT,
 		CW_USEDEFAULT,
@@ -45,6 +45,8 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 	{
 		return 0;
 	}
+
+	// init 
 
 	// 显示窗口
 	ShowWindow(hwnd, nCmdShow);

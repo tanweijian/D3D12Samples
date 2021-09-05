@@ -11,12 +11,12 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="SimpleWindow.h">
+    <ClInclude Include="DXWindow.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="SimpleWindow.cpp">
+    <ClCompile Include="DXWindow.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
