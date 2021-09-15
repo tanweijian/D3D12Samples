@@ -4,6 +4,8 @@
 
 #include "DXWindow.h"
 
+using namespace Microsoft::WRL;
+
 int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
 	// 声明窗口类
@@ -46,7 +48,21 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
 		return 0;
 	}
 
-	// init 
+	// load pipeline
+	{
+		UINT dxgiFactoryFlags = 0;
+#if defined(_DEBUG)
+		ComPtr<ID3D12Debug> debugController;
+		if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+		{
+			debugController->EnableDebugLayer();
+			dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+		}
+#endif
+		ComPtr<IDXGIFactory4> factory;
+		ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
+	}
+
 
 	// 显示窗口
 	ShowWindow(hwnd, nCmdShow);
