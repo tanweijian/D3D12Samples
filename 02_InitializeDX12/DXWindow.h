@@ -6,6 +6,6 @@
 #include <Windows.h>
 #include <wrl/client.h>
 
-#include "dxhelper.h"
+#include "Include/dxhelper.h"
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
