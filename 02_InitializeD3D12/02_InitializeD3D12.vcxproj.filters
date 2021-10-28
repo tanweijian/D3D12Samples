@@ -2,19 +2,19 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Include">
-      <UniqueIdentifier>{f1c44f20-7dac-4005-8579-71d7700fcab2}</UniqueIdentifier>
+      <UniqueIdentifier>{098bde91-dba7-490f-a4de-80ee834c2451}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DXWindow.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="DXWindow.h" />
     <ClInclude Include="..\Include\d3dx12.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="..\Include\dxhelper.h">
       <Filter>Include</Filter>
     </ClInclude>
+    <ClInclude Include="DXWindow.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DXWindow.cpp" />
   </ItemGroup>
 </Project>
