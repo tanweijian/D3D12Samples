@@ -151,10 +151,11 @@
   <ItemGroup>
     <ClInclude Include="..\Include\d3dx12.h" />
     <ClInclude Include="..\Include\dxhelper.h" />
-    <ClInclude Include="DXWindow.h" />
+    <ClInclude Include="Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DXWindow.cpp" />
+    <ClCompile Include="Win32Application.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

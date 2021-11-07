@@ -12,9 +12,10 @@
     <ClInclude Include="..\Include\dxhelper.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="DXWindow.h" />
+    <ClInclude Include="Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="DXWindow.cpp" />
+    <ClCompile Include="Win32Application.cpp" />
+    <ClCompile Include="Main.cpp" />
   </ItemGroup>
 </Project>

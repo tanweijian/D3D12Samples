@@ -1,15 +1,16 @@
-#ifndef UNICODE
-#define UNICODE
-#endif // !UNICODE
+#include "Win32Application.h"
 
-#include "DXWindow.h"
+HWND Win32Application::_hwnd = nullptr;
 
-using namespace Microsoft::WRL;
+HWND Win32Application::GetHwnd()
+{
+    return _hwnd;
+}
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
     // 声明窗口类
-    const wchar_t CLASS_NAME[] = L"DX12 Class";
+    const wchar_t CLASS_NAME[] = L"Sample Window Class";
 
     WNDCLASSEX wc = { };
     wc.cbSize = sizeof(WNDCLASSEX);  // 窗口类结构体的内存大小
@@ -28,10 +29,10 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     LONG height = rect.bottom - rect.top;  // 高度
 
     // 创建窗口
-    HWND hwnd = CreateWindowEx(
+    _hwnd = CreateWindowEx(
         WS_EX_LEFT,   // 窗口可选行为 (https://docs.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)
         CLASS_NAME,        // 要创建窗口类的名称
-        L"DX12 Window",    // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
+        L"Simple Window",    // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
         WS_OVERLAPPEDWINDOW,      // 窗口样式 (https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles)
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -43,29 +44,13 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         nullptr        // 额外需要传递窗口过程的数据指针
     );
 
-    if (hwnd == NULL)
+    if (_hwnd == nullptr)
     {
         return 0;
     }
 
-    // load pipeline
-    {
-        UINT dxgiFactoryFlags = 0;
-#if defined(_DEBUG)
-        ComPtr<ID3D12Debug> debugController;
-        if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
-        {
-            debugController->EnableDebugLayer();
-            dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-        }
-#endif
-        ComPtr<IDXGIFactory4> factory;
-        ThrowIfFailed(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory)));
-    }
-
-
     // 显示窗口
-    ShowWindow(hwnd, nCmdShow);
+    ShowWindow(_hwnd, nCmdShow);
 
     // 处理窗口信息
     MSG msg = { };
@@ -81,7 +66,7 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
     return 0;
 }
 
-LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+LRESULT CALLBACK Win32Application::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
 {
     switch (uMsg)
     {
