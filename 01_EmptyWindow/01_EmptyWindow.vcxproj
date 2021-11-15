@@ -16,6 +16,7 @@
     <ProjectGuid>{b5b532d0-3126-4abe-8712-91ae0dd906a1}</ProjectGuid>
     <RootNamespace>My01SimpleWindow</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+    <ProjectName>01_EmptyWindow</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
