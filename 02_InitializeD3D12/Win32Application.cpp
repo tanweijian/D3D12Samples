@@ -1,4 +1,11 @@
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl/client.h>
+#include <stdexcept>
+
 #include "Win32Application.h"
+
+using namespace Microsoft::WRL;
 
 HWND Win32Application::_hwnd = nullptr;
 
@@ -9,17 +16,13 @@ HWND Win32Application::GetHwnd()
 
 int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-    // 声明窗口类
-    const wchar_t CLASS_NAME[] = L"Sample Window Class";
-
-    WNDCLASSEX wc = { };
+    WNDCLASSEX wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEX);  // 窗口类结构体的内存大小
     wc.style = CS_HREDRAW | CS_VREDRAW;  // 当窗口水平和竖直方向大小发生变化时候重绘窗口
     wc.lpfnWndProc = WindowProc;  // 窗口过程函数指针
     wc.hInstance = hInstance;  // 窗口实例句柄
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);  // 光标
-    wc.lpszClassName = CLASS_NAME;  // 标识窗口类的字符串名称
-
+    wc.lpszClassName = L"D3D12";  // 标识窗口类的字符串名称
     RegisterClassEx(&wc);  // 向操作系统注册窗口类
 
     RECT rect = { 0, 0, 1280, 720 };
@@ -30,17 +33,17 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, P
 
     // 创建窗口
     _hwnd = CreateWindowEx(
-        WS_EX_LEFT,   // 窗口可选行为 (https://docs.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)
-        CLASS_NAME,        // 要创建窗口类的名称
-        L"Simple Window",    // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
-        WS_OVERLAPPEDWINDOW,      // 窗口样式 (https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles)
+        WS_EX_LEFT,           // 窗口可选行为 (https://docs.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)
+        wc.lpszClassName,     // 要创建窗口类的名称
+        L"D3D12",             // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
+        WS_OVERLAPPEDWINDOW,  // 窗口样式 (https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles)
         CW_USEDEFAULT,
         CW_USEDEFAULT,
         width,
         height,
         nullptr,       // 父级窗口
         nullptr,       // 菜单
-        hInstance,  // 窗口实例句柄
+        hInstance,     // 窗口实例句柄
         nullptr        // 额外需要传递窗口过程的数据指针
     );
 
@@ -48,6 +51,24 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, P
     {
         return 0;
     }
+
+    // init pipeline start ---------------------------
+    UINT dxgiFactoryFlags = 0;
+
+#if defined(_DEBUG)
+    ComPtr<ID3D12Debug> debugController;
+    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+    {
+        debugController->EnableDebugLayer();
+        dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+    }
+#endif
+    ComPtr<IDXGIFactory7> factory;
+    if (FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory))))
+    {
+        return 0;
+    }
+    // init pipeline end -----------------------------
 
     // 显示窗口
     ShowWindow(_hwnd, nCmdShow);
