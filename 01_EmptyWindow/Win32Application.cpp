@@ -43,7 +43,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, P
 
     if (_hwnd == nullptr)
     {
-        return 0;
+        return -1;
     }
 
     // 显示窗口

@@ -49,7 +49,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, P
 
     if (_hwnd == nullptr)
     {
-        return 0;
+        return -1;
     }
 
     // init pipeline start ---------------------------
@@ -66,8 +66,9 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, P
     ComPtr<IDXGIFactory7> factory;
     if (FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory))))
     {
-        return 0;
+        return -1;
     }
+
     // init pipeline end -----------------------------
 
     // 显示窗口
