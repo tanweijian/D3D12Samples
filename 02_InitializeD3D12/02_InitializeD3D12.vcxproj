@@ -89,7 +89,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\d3dx12.h" />
-    <ClInclude Include="..\Include\dxhelper.h" />
+    <ClInclude Include="..\Include\HrException.h" />
     <ClInclude Include="Win32Application.h" />
   </ItemGroup>
   <ItemGroup>

@@ -9,7 +9,7 @@
     <ClInclude Include="..\Include\d3dx12.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\dxhelper.h">
+    <ClInclude Include="..\Include\HrException.h">
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Win32Application.h" />

@@ -50,7 +50,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, P
     ShowWindow(_hwnd, nCmdShow);
 
     // 处理窗口信息
-    MSG msg = { };
+    MSG msg = { 0 };
     while (msg.message != WM_QUIT)
     {
         while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))  // 从消息队列中拉去消息
