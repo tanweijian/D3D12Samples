@@ -5,7 +5,7 @@
 class Win32Application
 {
 public:
-    static int WINAPI Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow);
+    static int WINAPI Run(HINSTANCE hInstance, int nCmdShow);
     static HWND GetHwnd();
 
 private:

@@ -9,10 +9,10 @@
     <ClInclude Include="..\Include\d3dx12.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="..\Include\HrException.h">
+    <ClInclude Include="Win32Application.h" />
+    <ClInclude Include="..\Include\log.h">
       <Filter>Include</Filter>
     </ClInclude>
-    <ClInclude Include="Win32Application.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Win32Application.cpp" />

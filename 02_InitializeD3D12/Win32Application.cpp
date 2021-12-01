@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include "Win32Application.h"
+#include "Include/log.h"
 
 using namespace Microsoft::WRL;
 
@@ -14,16 +15,17 @@ HWND Win32Application::GetHwnd()
     return _hwnd;
 }
 
-int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
-    WNDCLASSEX wc = { 0 };
-    wc.cbSize = sizeof(WNDCLASSEX);  // 窗口类结构体的内存大小
+    WNDCLASSEXW wc = { 0 };
+    wc.cbSize = sizeof(WNDCLASSEXW);  // 窗口类结构体的内存大小
     wc.style = CS_HREDRAW | CS_VREDRAW;  // 当窗口水平和竖直方向大小发生变化时候重绘窗口
     wc.lpfnWndProc = WindowProc;  // 窗口过程函数指针
     wc.hInstance = hInstance;  // 窗口实例句柄
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);  // 光标
     wc.lpszClassName = L"D3D12";  // 标识窗口类的字符串名称
-    RegisterClassEx(&wc);  // 向操作系统注册窗口类
+
+    RegisterClassExW(&wc);  // 向操作系统注册窗口类
 
     RECT rect = { 0, 0, 1280, 720 };
     AdjustWindowRect(&rect, WS_OVERLAPPEDWINDOW, FALSE);  // 计算窗口矩形大小
@@ -32,7 +34,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, P
     LONG height = rect.bottom - rect.top;  // 高度
 
     // 创建窗口
-    _hwnd = CreateWindowEx(
+    _hwnd = CreateWindowExW(
         WS_EX_LEFT,           // 窗口可选行为 (https://docs.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)
         wc.lpszClassName,     // 要创建窗口类的名称
         L"D3D12",             // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
@@ -49,26 +51,32 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, P
 
     if (_hwnd == nullptr)
     {
+        DebugPrint(L"can not create window ");
         return -1;
     }
 
     // init pipeline start ---------------------------
     UINT dxgiFactoryFlags = 0;
+    HRESULT hr = E_FAIL;
 
 #if defined(_DEBUG)
     ComPtr<ID3D12Debug> debugController;
-    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugController))))
+    hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
+    if (FAILED(hr))
     {
-        debugController->EnableDebugLayer();
-        dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-    }
-#endif
-    ComPtr<IDXGIFactory7> factory;
-    if (FAILED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory))))
-    {
+        DebugPrintf(L"d3d12: can't create debug layer (0x%08X)", hr);
         return -1;
     }
-
+    debugController->EnableDebugLayer();
+    dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+#endif
+    ComPtr<IDXGIFactory7> factory;
+    hr = CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory));
+    if (FAILED(hr))
+    {
+        DebugPrintf(L"d3d12: can't create dxgi factory (0x%08X)", hr);
+        return -1;
+    }
     // init pipeline end -----------------------------
 
     // 显示窗口
@@ -78,10 +86,10 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, HINSTANCE hPrevInstance, P
     MSG msg = { 0 };
     while (msg.message != WM_QUIT)
     {
-        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))  // 从消息队列中拉去消息
+        if (PeekMessageW(&msg, NULL, 0, 0, PM_REMOVE))  // 从消息队列中拉去消息
         {
             TranslateMessage(&msg);  // 输入转换
-            DispatchMessage(&msg);  // 分发消息
+            DispatchMessageW(&msg);  // 分发消息
         }
     }
 
@@ -103,10 +111,6 @@ LRESULT CALLBACK Win32Application::WindowProc(HWND hwnd, UINT uMsg, WPARAM wPara
     }
     case WM_PAINT:  // 绘制窗口
     {
-        PAINTSTRUCT ps;  // 绘制信息数据结构
-        HDC hdc = BeginPaint(hwnd, &ps);  // 启动绘制
-        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));  // 填充工作区
-        EndPaint(hwnd, &ps);  // 结束绘制
         return 0;
     }
     }
