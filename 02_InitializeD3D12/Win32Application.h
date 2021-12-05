@@ -9,6 +9,7 @@ public:
     static HWND GetHwnd();
 
 private:
+    static bool _forceWarp;
     static HWND _hwnd;
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };

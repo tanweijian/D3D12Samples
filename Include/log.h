@@ -15,10 +15,9 @@ void DebugPrintf(LPCWSTR format, ...)
     TCHAR s_str[1024] = {};
     va_list args;
     va_start(args, format);
-    _vstprintf_s(s_str, sizeof(s_str), format, args);
+    _vstprintf_s(s_str, sizeof(s_str) - 1, format, args);
     va_end(args);
     OutputDebugString(s_str);
 }
 
 #endif // !__LOG_H__
-

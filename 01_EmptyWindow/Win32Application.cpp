@@ -15,7 +15,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     wc.lpfnWndProc = WindowProc;  // 窗口过程函数指针
     wc.hInstance = hInstance;  // 窗口实例句柄
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);  // 光标
-    wc.lpszClassName = L"D3D12";  // 标识窗口类的字符串名称
+    wc.lpszClassName = L"EmptyWindow";  // 标识窗口类的字符串名称
 
     RegisterClassExW(&wc);  // 向操作系统注册窗口类
 
@@ -29,7 +29,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     _hwnd = CreateWindowExW(
         WS_EX_LEFT,           // 窗口可选行为 (https://docs.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)
         wc.lpszClassName,     // 要创建窗口类的名称
-        L"D3D12",             // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
+        L"EmptyWindow",       // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
         WS_OVERLAPPEDWINDOW,  // 窗口样式 (https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles)
         CW_USEDEFAULT,
         CW_USEDEFAULT,

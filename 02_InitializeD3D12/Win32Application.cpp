@@ -3,10 +3,12 @@
 #include <wrl/client.h>
 #include <stdexcept>
 
-#include "Win32Application.h"
 #include "Include/log.h"
+#include "Win32Application.h"
 
 using namespace Microsoft::WRL;
+
+bool Win32Application::_forceWarp = false;
 
 HWND Win32Application::_hwnd = nullptr;
 
@@ -19,11 +21,12 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 {
     WNDCLASSEXW wc = { 0 };
     wc.cbSize = sizeof(WNDCLASSEXW);  // 窗口类结构体的内存大小
-    wc.style = CS_HREDRAW | CS_VREDRAW;  // 当窗口水平和竖直方向大小发生变化时候重绘窗口
+    wc.style = CS_HREDRAW | CS_VREDRAW | CS_GLOBALCLASS;  // 当窗口水平和竖直方向大小发生变化时候重绘窗口
     wc.lpfnWndProc = WindowProc;  // 窗口过程函数指针
     wc.hInstance = hInstance;  // 窗口实例句柄
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);  // 光标
-    wc.lpszClassName = L"D3D12";  // 标识窗口类的字符串名称
+    wc.lpszClassName = L"InitializeD3D12";  // 标识窗口类的字符串名称
+    wc.hbrBackground = (HBRUSH)GetStockObject(NULL_BRUSH);  // 防止背景重绘
 
     RegisterClassExW(&wc);  // 向操作系统注册窗口类
 
@@ -37,7 +40,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     _hwnd = CreateWindowExW(
         WS_EX_LEFT,           // 窗口可选行为 (https://docs.microsoft.com/en-us/windows/win32/winmsg/extended-window-styles)
         wc.lpszClassName,     // 要创建窗口类的名称
-        L"D3D12",             // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
+        L"InitializeD3D12",   // 窗口文本，如果窗口显示标题，则会显示窗口文本标题
         WS_OVERLAPPEDWINDOW,  // 窗口样式 (https://docs.microsoft.com/en-us/windows/win32/winmsg/window-styles)
         CW_USEDEFAULT,
         CW_USEDEFAULT,
@@ -51,7 +54,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 
     if (_hwnd == nullptr)
     {
-        DebugPrint(L"can not create window ");
+        DebugPrint(L"can not create window");
         return -1;
     }
 
@@ -64,23 +67,85 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
     if (FAILED(hr))
     {
-        DebugPrintf(L"d3d12: can't create debug layer (0x%08X)", hr);
+        DebugPrintf(L"d3d12: failed create debug layer (0x%08X)", hr);
         return -1;
     }
     debugController->EnableDebugLayer();
     dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
+    // factory
     ComPtr<IDXGIFactory7> factory;
     hr = CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory));
     if (FAILED(hr))
     {
-        DebugPrintf(L"d3d12: can't create dxgi factory (0x%08X)", hr);
+        DebugPrintf(L"d3d12: failed create dxgi factory (0x%08X)", hr);
+        return -1;
+    }
+    // device
+    ComPtr<ID3D12Device8> device;
+    if (Win32Application::_forceWarp)
+    {
+        ComPtr<IDXGIAdapter4> adapter;
+        hr = factory->EnumWarpAdapter(IID_PPV_ARGS(&adapter));
+        if (FAILED(hr))
+        {
+            DebugPrintf(L"d3d12: failed enum warp adapter (0x%08X)", hr);
+            return -1;
+        }
+        hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
+        if (FAILED(hr))
+        {
+            DebugPrintf(L"d3d12: failed create warp device (0x%08X)", hr);
+            return -1;
+        }
+    }
+    else
+    {
+        ComPtr<IDXGIAdapter4> adapter;
+        UINT adapterIndex = 0;
+        while (SUCCEEDED(factory->EnumAdapterByGpuPreference(adapterIndex, DXGI_GPU_PREFERENCE_HIGH_PERFORMANCE, IID_PPV_ARGS(&adapter))))
+        {
+            adapterIndex++;
+            DXGI_ADAPTER_DESC3 desc;
+            adapter->GetDesc3(&desc);
+            if (desc.Flags & DXGI_ADAPTER_FLAG_SOFTWARE)
+            {
+                // don't select the basic render driver adapter.
+                continue;
+            }
+            // check to see whether the adapter supports Direct3D 12, but don't create the actual device yet.
+            if (SUCCEEDED(D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_1, __uuidof(ID3D12Device8), nullptr)))
+            {
+                break;
+            }
+        }
+        if (adapter.Get() == nullptr)
+        {
+            DebugPrint(L"d3d12: failed created hardware adapter");
+            return -1;
+        }
+        hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
+        if (FAILED(hr))
+        {
+            DebugPrintf(L"d3d12: failed created hardware device (0x%08X)", hr);
+            return -1;
+        }
+    }
+    // command queue
+    ComPtr<ID3D12CommandQueue> commandQueue;
+    D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+    queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue));
+    if (FAILED(hr))
+    {
+        DebugPrintf(L"d3d12: failed created command queue (0x%08X)", hr);
         return -1;
     }
     // init pipeline end -----------------------------
 
     // 显示窗口
-    ShowWindow(_hwnd, nCmdShow); 
+    ShowWindow(_hwnd, nCmdShow);
 
     // 处理窗口信息
     MSG msg = { 0 };
