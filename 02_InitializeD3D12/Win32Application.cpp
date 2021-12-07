@@ -4,11 +4,13 @@
 #include <stdexcept>
 
 #include "Include/log.h"
+#include "Include/d3dx12.h"
 #include "Win32Application.h"
 
 using namespace Microsoft::WRL;
 
 bool Win32Application::_forceWarp = false;
+UINT Win32Application::_frameIndex = 0;
 
 HWND Win32Application::_hwnd = nullptr;
 
@@ -148,7 +150,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 
     // swap chain
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
-    swapChainDesc.BufferCount = 2;
+    swapChainDesc.BufferCount = 3;
     swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
     swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
     swapChainDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -161,7 +163,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
     swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     ComPtr<IDXGISwapChain1> swapChain1;
-    hr = factory->CreateSwapChainForHwnd(commandQueue.Get(), Win32Application::GetHwnd(), &swapChainDesc, nullptr, nullptr, &swapChain);
+    hr = factory->CreateSwapChainForHwnd(commandQueue.Get(), Win32Application::GetHwnd(), &swapChainDesc, nullptr, nullptr, &swapChain1);
     if (FAILED(hr))
     {
         DebugPrintf(L"d3d12: failed created swap chain (0x%08X).\n", hr);
@@ -174,7 +176,49 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
         DebugPrintf(L"d3d12: failed transfer IDXGISwapChain1 to IDXGISwapChain4 (0x%08X).\n", hr);
         return -1;
     }
+    // does not fullscreen transitions
+    hr = factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER);
+    if (FAILED(hr))
+    {
+        DebugPrintf(L"d3d12: failed make window not fullscreen transitions (0x%08X).\n", hr);
+        return -1;
+    }
+    Win32Application::_frameIndex = swapChain->GetCurrentBackBufferIndex();
 
+    // descriptor heaps
+    D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};  //render target view
+    rtvHeapDesc.NumDescriptors = 3;
+    rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
+    rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
+    ComPtr<ID3D12DescriptorHeap> rtvHeap;
+    hr = device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap));
+    if (FAILED(hr))
+    {
+        DebugPrintf(L"d3d12: failed create rtv heap (0x%08X).\n", hr);
+        return -1;
+    }
+    UINT rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    // create a rtv for each frame
+    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap->GetCPUDescriptorHandleForHeapStart());
+    ComPtr<ID3D12Resource> _renderTargets[3];
+    for (UINT i = 0; i < 3; i++)
+    {
+        hr = swapChain->GetBuffer(i, IID_PPV_ARGS(&_renderTargets[i]));
+        if (FAILED(hr))
+        {
+            DebugPrintf(L"d3d12: failed create rtv resource (0x%08X).\n", hr);
+            return -1;
+        }
+        device->CreateRenderTargetView(_renderTargets[i].Get(), nullptr, rtvHandle);
+        rtvHandle.Offset(1, rtvDescriptorSize);
+    }
+    ComPtr<ID3D12CommandAllocator> commandAllocator;
+    hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator));
+    if (FAILED(hr))
+    {
+        DebugPrintf(L"d3d12: failed create command allocator (0x%08X).\n", hr);
+        return -1;
+    }
     // init pipeline end -----------------------------
 
     // 显示窗口

@@ -10,6 +10,7 @@ public:
 
 private:
     static bool _forceWarp;
+    static UINT _frameIndex;
     static HWND _hwnd;
     static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 };
