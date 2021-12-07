@@ -54,7 +54,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 
     if (_hwnd == nullptr)
     {
-        DebugPrint(L"can not create window");
+        DebugPrint(L"can not create window.\n");
         return -1;
     }
 
@@ -67,20 +67,22 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
     if (FAILED(hr))
     {
-        DebugPrintf(L"d3d12: failed create debug layer (0x%08X)", hr);
+        DebugPrintf(L"d3d12: failed create debug layer (0x%08X).\n", hr);
         return -1;
     }
     debugController->EnableDebugLayer();
     dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
+
     // factory
     ComPtr<IDXGIFactory7> factory;
     hr = CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory));
     if (FAILED(hr))
     {
-        DebugPrintf(L"d3d12: failed create dxgi factory (0x%08X)", hr);
+        DebugPrintf(L"d3d12: failed create dxgi factory (0x%08X).\n", hr);
         return -1;
     }
+
     // device
     ComPtr<ID3D12Device8> device;
     if (Win32Application::_forceWarp)
@@ -89,13 +91,13 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
         hr = factory->EnumWarpAdapter(IID_PPV_ARGS(&adapter));
         if (FAILED(hr))
         {
-            DebugPrintf(L"d3d12: failed enum warp adapter (0x%08X)", hr);
+            DebugPrintf(L"d3d12: failed enum warp adapter (0x%08X).\n", hr);
             return -1;
         }
         hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
         if (FAILED(hr))
         {
-            DebugPrintf(L"d3d12: failed create warp device (0x%08X)", hr);
+            DebugPrintf(L"d3d12: failed create warp device (0x%08X).\n", hr);
             return -1;
         }
     }
@@ -121,27 +123,58 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
         }
         if (adapter.Get() == nullptr)
         {
-            DebugPrint(L"d3d12: failed created hardware adapter");
+            DebugPrint(L"d3d12: failed created hardware adapter.\n");
             return -1;
         }
         hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
         if (FAILED(hr))
         {
-            DebugPrintf(L"d3d12: failed created hardware device (0x%08X)", hr);
+            DebugPrintf(L"d3d12: failed created hardware device (0x%08X).\n", hr);
             return -1;
         }
     }
+
     // command queue
-    ComPtr<ID3D12CommandQueue> commandQueue;
     D3D12_COMMAND_QUEUE_DESC queueDesc = {};
     queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    ComPtr<ID3D12CommandQueue> commandQueue;
     hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue));
     if (FAILED(hr))
     {
-        DebugPrintf(L"d3d12: failed created command queue (0x%08X)", hr);
+        DebugPrintf(L"d3d12: failed created command queue (0x%08X).\n", hr);
         return -1;
     }
+
+    // swap chain
+    DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+    swapChainDesc.BufferCount = 2;
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
+    swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    swapChainDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+    swapChainDesc.Width = 1280;
+    swapChainDesc.Height = 720;
+    swapChainDesc.SampleDesc.Count = 1;   // dx12 does not support msaa swap chains
+    swapChainDesc.SampleDesc.Quality = 0;
+    swapChainDesc.Stereo = FALSE;
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+    swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
+    swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
+    ComPtr<IDXGISwapChain1> swapChain1;
+    hr = factory->CreateSwapChainForHwnd(commandQueue.Get(), Win32Application::GetHwnd(), &swapChainDesc, nullptr, nullptr, &swapChain);
+    if (FAILED(hr))
+    {
+        DebugPrintf(L"d3d12: failed created swap chain (0x%08X).\n", hr);
+        return -1;
+    }
+    ComPtr<IDXGISwapChain4> swapChain;
+    hr = swapChain1.As(&swapChain);
+    if (FAILED(hr))
+    {
+        DebugPrintf(L"d3d12: failed transfer IDXGISwapChain1 to IDXGISwapChain4 (0x%08X).\n", hr);
+        return -1;
+    }
+
     // init pipeline end -----------------------------
 
     // 显示窗口
