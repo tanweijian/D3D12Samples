@@ -89,7 +89,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\Include\d3dx12.h" />
-    <ClInclude Include="..\Include\log.h" />
+    <ClInclude Include="..\Include\LogAssert.h" />
     <ClInclude Include="Win32Application.h" />
   </ItemGroup>
   <ItemGroup>

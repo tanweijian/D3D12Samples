@@ -3,7 +3,7 @@
 #include <wrl/client.h>
 #include <stdexcept>
 
-#include "Include/log.h"
+#include "Include/LogAssert.h"
 #include "Include/d3dx12.h"
 #include "Win32Application.h"
 
@@ -56,7 +56,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 
     if (_hwnd == nullptr)
     {
-        DebugPrint(L"can not create window.\n");
+        ERROR("can not create window");
         return -1;
     }
 
@@ -67,11 +67,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 #if defined(_DEBUG)
     ComPtr<ID3D12Debug> debugController;
     hr = D3D12GetDebugInterface(IID_PPV_ARGS(&debugController));
-    if (FAILED(hr))
-    {
-        DebugPrintf(L"d3d12: failed create debug layer (0x%08X).\n", hr);
-        return -1;
-    }
+    ASSERT_SUCCEEDED(hr, "d3d12: failed create debug layer");
     debugController->EnableDebugLayer();
     dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
 #endif
@@ -79,11 +75,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     // factory
     ComPtr<IDXGIFactory7> factory;
     hr = CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&factory));
-    if (FAILED(hr))
-    {
-        DebugPrintf(L"d3d12: failed create dxgi factory (0x%08X).\n", hr);
-        return -1;
-    }
+    ASSERT_SUCCEEDED(hr, "d3d12: failed create dxgi factory");
 
     // device
     ComPtr<ID3D12Device8> device;
@@ -91,17 +83,10 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     {
         ComPtr<IDXGIAdapter4> adapter;
         hr = factory->EnumWarpAdapter(IID_PPV_ARGS(&adapter));
-        if (FAILED(hr))
-        {
-            DebugPrintf(L"d3d12: failed enum warp adapter (0x%08X).\n", hr);
-            return -1;
-        }
+        ASSERT_SUCCEEDED(hr, "d3d12: failed enum warp adapter");
+
         hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
-        if (FAILED(hr))
-        {
-            DebugPrintf(L"d3d12: failed create warp device (0x%08X).\n", hr);
-            return -1;
-        }
+        ASSERT_SUCCEEDED(hr, "d3d12: failed create warp device");
     }
     else
     {
@@ -125,15 +110,11 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
         }
         if (adapter.Get() == nullptr)
         {
-            DebugPrint(L"d3d12: failed created hardware adapter.\n");
+            ERROR("d3d12: failed created hardware adapter");
             return -1;
         }
         hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
-        if (FAILED(hr))
-        {
-            DebugPrintf(L"d3d12: failed created hardware device (0x%08X).\n", hr);
-            return -1;
-        }
+        ASSERT_SUCCEEDED(hr, "d3d12: failed created hardware device");
     }
 
     // command queue
@@ -142,11 +123,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
     ComPtr<ID3D12CommandQueue> commandQueue;
     hr = device->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&commandQueue));
-    if (FAILED(hr))
-    {
-        DebugPrintf(L"d3d12: failed created command queue (0x%08X).\n", hr);
-        return -1;
-    }
+    ASSERT_SUCCEEDED(hr, "d3d12: failed created command queue");
 
     // swap chain
     DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
@@ -164,25 +141,16 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     ComPtr<IDXGISwapChain1> swapChain1;
     hr = factory->CreateSwapChainForHwnd(commandQueue.Get(), Win32Application::GetHwnd(), &swapChainDesc, nullptr, nullptr, &swapChain1);
-    if (FAILED(hr))
-    {
-        DebugPrintf(L"d3d12: failed created swap chain (0x%08X).\n", hr);
-        return -1;
-    }
+    ASSERT_SUCCEEDED(hr, "d3d12: failed created swap chain");
+
     ComPtr<IDXGISwapChain4> swapChain;
     hr = swapChain1.As(&swapChain);
-    if (FAILED(hr))
-    {
-        DebugPrintf(L"d3d12: failed transfer IDXGISwapChain1 to IDXGISwapChain4 (0x%08X).\n", hr);
-        return -1;
-    }
+    ASSERT_SUCCEEDED(hr, "d3d12: failed transfer IDXGISwapChain1 to IDXGISwapChain4");
+    
     // does not fullscreen transitions
     hr = factory->MakeWindowAssociation(Win32Application::GetHwnd(), DXGI_MWA_NO_ALT_ENTER);
-    if (FAILED(hr))
-    {
-        DebugPrintf(L"d3d12: failed make window not fullscreen transitions (0x%08X).\n", hr);
-        return -1;
-    }
+    ASSERT_SUCCEEDED(hr, "d3d12: failed make window not fullscreen transitions");
+    
     Win32Application::_frameIndex = swapChain->GetCurrentBackBufferIndex();
 
     // descriptor heaps
@@ -192,33 +160,23 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
     rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
     ComPtr<ID3D12DescriptorHeap> rtvHeap;
     hr = device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&rtvHeap));
-    if (FAILED(hr))
-    {
-        DebugPrintf(L"d3d12: failed create rtv heap (0x%08X).\n", hr);
-        return -1;
-    }
-    UINT rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+    ASSERT_SUCCEEDED(hr, "d3d12: failed create rtv heap");
+
     // create a rtv for each frame
+    UINT rtvDescriptorSize = device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(rtvHeap->GetCPUDescriptorHandleForHeapStart());
     ComPtr<ID3D12Resource> _renderTargets[3];
     for (UINT i = 0; i < 3; i++)
     {
         hr = swapChain->GetBuffer(i, IID_PPV_ARGS(&_renderTargets[i]));
-        if (FAILED(hr))
-        {
-            DebugPrintf(L"d3d12: failed create rtv resource (0x%08X).\n", hr);
-            return -1;
-        }
+        ASSERT_SUCCEEDED(hr, "d3d12: failed create rtv resource");
         device->CreateRenderTargetView(_renderTargets[i].Get(), nullptr, rtvHandle);
         rtvHandle.Offset(1, rtvDescriptorSize);
     }
     ComPtr<ID3D12CommandAllocator> commandAllocator;
     hr = device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&commandAllocator));
-    if (FAILED(hr))
-    {
-        DebugPrintf(L"d3d12: failed create command allocator (0x%08X).\n", hr);
-        return -1;
-    }
+    ASSERT_SUCCEEDED(hr, "d3d12: failed create command allocator");
+    
     // init pipeline end -----------------------------
 
     // 显示窗口

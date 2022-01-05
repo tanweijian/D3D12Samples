@@ -10,7 +10,7 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="Win32Application.h" />
-    <ClInclude Include="..\Include\log.h">
+    <ClInclude Include="..\Include\LogAssert.h">
       <Filter>Include</Filter>
     </ClInclude>
   </ItemGroup>
