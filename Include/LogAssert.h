@@ -2,6 +2,7 @@
 
 #include <stdio.h>
 #include <Windows.h>
+#include <locale>
 
 #ifdef _CONSOLE
 inline void Print(const char* msg) { printf("%s", msg); }
@@ -28,7 +29,9 @@ inline void Printf(const wchar_t* format, ...)
     va_start(ap, format);
     vswprintf(buffer, 256, format, ap);
     va_end(ap);
+    setlocale(LC_ALL, "chs");
     Print(buffer);
+    setlocale(LC_ALL, "C");
 }
 
 inline void PrintSubMessage(const char* format, ...)
