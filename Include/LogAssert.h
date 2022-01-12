@@ -62,10 +62,10 @@ inline void PrintSubMessage(const wchar_t* format, ...)
 #define STRINGIFY(x) #x
 #define STRINGIFY_BUILTIN(x) STRINGIFY(x)
 
-#define DEBUG(msg, ...) \
+#define LOGDEBUG(msg, ...) \
         Printf(msg "\n", ##__VA_ARGS__);
 
-#define ERROR(msg, ...) \
+#define LOGERROR(msg, ...) \
         Print("\nError reported in " STRINGIFY_BUILTIN(__FILE__) " @ " STRINGIFY_BUILTIN(__LINE__) "\n"); \
         PrintSubMessage(msg, ##__VA_ARGS__); \
         Print("\n");

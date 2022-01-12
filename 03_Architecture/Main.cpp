@@ -34,7 +34,7 @@ int main(int argc, char** argv)
             {
                 continue;
             }
-            DEBUG(L"显卡[%d] \"%s\" 独占显存[%dMB] 独占内存[%dMB] 共享内存[%dMB]", adapterIndex, desc.Description, desc.DedicatedVideoMemory / (1024 * 1024), desc.DedicatedSystemMemory / (1024 * 1024), desc.SharedSystemMemory / (1024 * 1024));
+            LOGDEBUG(L"显卡[%d] \"%s\" 独占显存[%dMB] 独占内存[%dMB] 共享内存[%dMB]", adapterIndex, desc.Description, desc.DedicatedVideoMemory / (1024 * 1024), desc.DedicatedSystemMemory / (1024 * 1024), desc.SharedSystemMemory / (1024 * 1024));
 
             hr = D3D12CreateDevice(_adpater, D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&_device));
             if (SUCCEEDED(hr))
@@ -46,21 +46,21 @@ int main(int argc, char** argv)
                     {
                         if (architecture.CacheCoherentUMA)
                         {
-                            DEBUG("CC-UMA 架构");
+                            LOGDEBUG("CC-UMA 架构");
                         }
                         else
                         {
-                            DEBUG("UMA 架构");
+                            LOGDEBUG("UMA 架构");
                         }
                     }
                     else if (architecture.IsolatedMMU)
                     {
-                        DEBUG("NUMA 架构");
+                        LOGDEBUG("NUMA 架构");
                     }
                     
                     if (architecture.TileBasedRenderer)
                     {
-                        DEBUG("支持 tile based renderer");
+                        LOGDEBUG("支持 tile based renderer");
                     }
                 }
             }

@@ -7,7 +7,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "01_EmptyWindow", "01_EmptyW
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_InitializeD3D12", "02_InitializeD3D12\02_InitializeD3D12.vcxproj", "{459065B3-5E90-44CE-ADD0-5465EBEAB52A}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_SMPFramework", "03_SMPFramework\03_SMPFramework.vcxproj", "{2C93E057-0F4E-4CE1-A77A-4DEAE4DF4D51}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_Architecture", "03_Architecture\03_Architecture.vcxproj", "{2C93E057-0F4E-4CE1-A77A-4DEAE4DF4D51}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

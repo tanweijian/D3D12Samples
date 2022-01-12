@@ -14,7 +14,7 @@
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{b5b532d0-3126-4abe-8712-91ae0dd906a1}</ProjectGuid>
-    <RootNamespace>My01SimpleWindow</RootNamespace>
+    <RootNamespace>TCG</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <ProjectName>01_EmptyWindow</ProjectName>
   </PropertyGroup>

@@ -56,7 +56,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
 
     if (_hwnd == nullptr)
     {
-        ERROR("can not create window");
+        LOGERROR("can not create window");
         return -1;
     }
 
@@ -110,7 +110,7 @@ int WINAPI Win32Application::Run(HINSTANCE hInstance, int nCmdShow)
         }
         if (adapter.Get() == nullptr)
         {
-            ERROR("d3d12: failed created hardware adapter");
+            LOGERROR("d3d12: failed created hardware adapter");
             return -1;
         }
         hr = D3D12CreateDevice(adapter.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
