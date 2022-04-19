@@ -55,8 +55,8 @@ inline void PrintSubMessage(const wchar_t* format, ...)
 }
 
 #if NDEBUG
-#define ERROR(msg, ...) do {} while(0)
-#define DEBUG(msg, ...) do {} while(0)
+#define LOGERROR(msg, ...) do {} while(0)
+#define LOGDEBUG(msg, ...) do {} while(0)
 #define ASSERT_SUCCEEDED(hr, ...) (void)(hr)
 #else
 #define STRINGIFY(x) #x

@@ -9,6 +9,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "02_InitializeD3D12", "02_In
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "03_Architecture", "03_Architecture\03_Architecture.vcxproj", "{2C93E057-0F4E-4CE1-A77A-4DEAE4DF4D51}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", "{47B6B2F2-9C6E-41DC-ABCF-FE4D77DA9BD9}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdlog", "ThirdParty\spdlog\spdlog.vcxproj", "{DC9DC88B-4A96-4770-A228-15095A10F2DC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -27,9 +31,16 @@ Global
 		{2C93E057-0F4E-4CE1-A77A-4DEAE4DF4D51}.Debug|x64.Build.0 = Debug|x64
 		{2C93E057-0F4E-4CE1-A77A-4DEAE4DF4D51}.Release|x64.ActiveCfg = Release|x64
 		{2C93E057-0F4E-4CE1-A77A-4DEAE4DF4D51}.Release|x64.Build.0 = Release|x64
+		{DC9DC88B-4A96-4770-A228-15095A10F2DC}.Debug|x64.ActiveCfg = Debug|x64
+		{DC9DC88B-4A96-4770-A228-15095A10F2DC}.Debug|x64.Build.0 = Debug|x64
+		{DC9DC88B-4A96-4770-A228-15095A10F2DC}.Release|x64.ActiveCfg = Release|x64
+		{DC9DC88B-4A96-4770-A228-15095A10F2DC}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{DC9DC88B-4A96-4770-A228-15095A10F2DC} = {47B6B2F2-9C6E-41DC-ABCF-FE4D77DA9BD9}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {B26AF803-7B64-42D9-B339-AFA49544844F}
