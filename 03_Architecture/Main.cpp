@@ -2,7 +2,9 @@
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 
+#include "spdlog/spdlog.h"
 #include "Include/LogAssert.h"
+#include "Include/Utils.h"
 
 using namespace Microsoft::WRL;
 
@@ -35,7 +37,7 @@ int main(int argc, char** argv)
             {
                 continue;
             }
-            LOGDEBUG(L"显卡[%d] \"%s\" 独占显存[%dMB] 独占内存[%dMB] 共享内存[%dMB]", adapterIndex, desc.Description, desc.DedicatedVideoMemory / (1024 * 1024), desc.DedicatedSystemMemory / (1024 * 1024), desc.SharedSystemMemory / (1024 * 1024));
+            SPDLOG_INFO("[{}] \"{}\" 独占显存[{}MB] 独占内存[{}MB] 共享内存[{}MB]", adapterIndex, wchar2char(desc.Description), desc.DedicatedVideoMemory / (1024 * 1024), desc.DedicatedSystemMemory / (1024 * 1024), desc.SharedSystemMemory / (1024 * 1024));
             ComPtr<ID3D12Device8> device;
             hr = D3D12CreateDevice(adpater.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
             if (SUCCEEDED(hr))
@@ -47,21 +49,21 @@ int main(int argc, char** argv)
                     {
                         if (architecture.CacheCoherentUMA)
                         {
-                            LOGDEBUG("CC-UMA 架构");
+                            SPDLOG_INFO("CC-UMA 架构");
                         }
                         else
                         {
-                            LOGDEBUG("UMA 架构");
+                            SPDLOG_INFO("UMA 架构");
                         }
                     }
                     else if (architecture.IsolatedMMU)
                     {
-                        LOGDEBUG("NUMA 架构");
+                        SPDLOG_INFO("NUMA 架构");
                     }
 
                     if (architecture.TileBasedRenderer)
                     {
-                        LOGDEBUG("支持 tile based renderer");
+                        SPDLOG_INFO("支持 tile based renderer");
                     }
                 }
             }
