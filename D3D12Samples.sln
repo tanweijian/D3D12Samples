@@ -13,6 +13,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "spdlog", "ThirdParty\spdlog\spdlog.vcxproj", "{DC9DC88B-4A96-4770-A228-15095A10F2DC}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "04_DrawTriangle", "04_DrawTriangle\04_DrawTriangle.vcxproj", "{54C72E0B-9468-4C45-AA07-3CF50088D9E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -35,6 +37,10 @@ Global
 		{DC9DC88B-4A96-4770-A228-15095A10F2DC}.Debug|x64.Build.0 = Debug|x64
 		{DC9DC88B-4A96-4770-A228-15095A10F2DC}.Release|x64.ActiveCfg = Release|x64
 		{DC9DC88B-4A96-4770-A228-15095A10F2DC}.Release|x64.Build.0 = Release|x64
+		{54C72E0B-9468-4C45-AA07-3CF50088D9E2}.Debug|x64.ActiveCfg = Debug|x64
+		{54C72E0B-9468-4C45-AA07-3CF50088D9E2}.Debug|x64.Build.0 = Debug|x64
+		{54C72E0B-9468-4C45-AA07-3CF50088D9E2}.Release|x64.ActiveCfg = Release|x64
+		{54C72E0B-9468-4C45-AA07-3CF50088D9E2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
