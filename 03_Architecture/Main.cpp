@@ -37,7 +37,7 @@ int main(int argc, char** argv)
             {
                 continue;
             }
-            SPDLOG_INFO("[{}] \"{}\" 独占显存[{}MB] 独占内存[{}MB] 共享内存[{}MB]", adapterIndex, wchar2char(desc.Description), desc.DedicatedVideoMemory / (1024 * 1024), desc.DedicatedSystemMemory / (1024 * 1024), desc.SharedSystemMemory / (1024 * 1024));
+            SPDLOG_INFO("[{}] \"{}\" 独占显存[{}MB] 独占内存[{}MB] 共享内存[{}MB]", adapterIndex, wchar2char(desc.Description).get(), desc.DedicatedVideoMemory / (1024 * 1024), desc.DedicatedSystemMemory / (1024 * 1024), desc.SharedSystemMemory / (1024 * 1024));
             ComPtr<ID3D12Device8> device;
             hr = D3D12CreateDevice(adpater.Get(), D3D_FEATURE_LEVEL_12_1, IID_PPV_ARGS(&device));
             if (SUCCEEDED(hr))
