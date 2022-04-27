@@ -16,12 +16,26 @@ void WinApplication::SetWinSize(const int width, const int height)
     _height = height;
 }
 
+int WinApplication::GetWidth()
+{
+    return _width;
+}
+
+int WinApplication::GetHeight()
+{
+    return _height;
+}
+
+void WinApplication::Update()
+{
+}
+
 namespace Application
 {
     int Run(WinApplication& app, HINSTANCE hInstance, const wchar_t* className, int nCmdShow)
     {
         // Register class
-        WNDCLASSEX wcex;
+        WNDCLASSEX wcex{};
         wcex.cbSize = sizeof(WNDCLASSEX);
         wcex.style = CS_HREDRAW | CS_VREDRAW;
         wcex.lpfnWndProc = WindowProc;
@@ -36,8 +50,36 @@ namespace Application
         wcex.hIconSm = LoadIcon(hInstance, IDI_APPLICATION);
         RegisterClassEx(&wcex);
 
-        HWND hInst = CreateWindow(className, className, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, 1280, 720, nullptr, nullptr, hInstance, nullptr);
-        app.SethWnd(hInst);
+        int width = app.GetWidth();
+        int height = app.GetHeight();
+        HWND hWnd = CreateWindow(className, className, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
+        app.SethWnd(hWnd);
+
+        InitializeApplication(app);
+
+        ShowWindow(hWnd, nCmdShow);
+
+        do
+        {
+            MSG msg = {};
+            bool exit = false;
+            while (PeekMessageW(&msg, nullptr, 0, 0, PM_REMOVE))  // 从消息队列中拉去消息
+            {
+                TranslateMessage(&msg);  // 输入转换
+                DispatchMessageW(&msg);  // 分发消息
+
+                if (msg.message == WM_QUIT)
+                {
+                    exit = true;
+                }
+            }
+            if (exit)
+            {
+                break;
+            }
+        } while (UpdateApplication(app));
+
+        TerminateApplication(app);
 
         return 0;
     }
@@ -58,5 +100,18 @@ namespace Application
         }
 
         return 0;
+    }
+
+    void InitializeApplication(WinApplication& app)
+    {
+    }
+
+    bool UpdateApplication(WinApplication& app)
+    {
+        return true;
+    }
+
+    void TerminateApplication(WinApplication& app)
+    {
     }
 }
