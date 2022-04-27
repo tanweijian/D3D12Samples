@@ -1,7 +1,10 @@
 #include <Windows.h>
 
+#include "WinApplication.h"
+
 _Use_decl_annotations_
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE 、hPrevInstance, PWSTR pCmdLine, int nCmdShow)
 {
-    return 0;
+    WinApplication app;
+    return Application::Run(app, hInstance, L"", nCmdShow);
 }
