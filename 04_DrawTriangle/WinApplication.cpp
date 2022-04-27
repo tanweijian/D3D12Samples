@@ -1,5 +1,12 @@
 #include "WinApplication.h"
 
+WinApplication::WinApplication(int width, int height, std::wstring name)
+{
+    _width = width;
+    _height = height;
+    _name = name;
+}
+
 void WinApplication::SethWnd(const HWND hWnd)
 {
     _hWnd = hWnd;
@@ -10,12 +17,6 @@ HWND WinApplication::GethWnd()
     return _hWnd;
 }
 
-void WinApplication::SetWinSize(const int width, const int height)
-{
-    _width = width;
-    _height = height;
-}
-
 int WinApplication::GetWidth()
 {
     return _width;
@@ -24,6 +25,11 @@ int WinApplication::GetWidth()
 int WinApplication::GetHeight()
 {
     return _height;
+}
+
+std::wstring WinApplication::GetName()
+{
+    return _name;
 }
 
 void WinApplication::Update()

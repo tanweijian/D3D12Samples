@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Windows.h>
+#include <string>
 
 class WinApplication
 {
@@ -8,13 +9,15 @@ private:
     HWND _hWnd = nullptr;
     int _width = 1280;
     int _height = 720;
+    std::wstring _name;
 
 public:
+    WinApplication(int width, int height, std::wstring name);
     void SethWnd(const HWND hWnd);
     HWND GethWnd();
-    void SetWinSize(const int width, const int height);
     int GetWidth();
     int GetHeight();
+    std::wstring GetName();
 
 public:
     void Update();
