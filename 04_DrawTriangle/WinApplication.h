@@ -1,34 +1,32 @@
 #pragma once
 
-#include <Windows.h>
 #include <string>
+#include <Windows.h>
 
 class WinApplication
 {
 private:
+    // propertice
     HWND _hWnd = nullptr;
-    int _width = 1280;
-    int _height = 720;
-    std::wstring _name;
-
 public:
-    WinApplication(int width, int height, std::wstring name);
+    // propertice
+    int Width = 1280;
+    int Height = 720;
+    std::wstring Name;
+    // function
     void SethWnd(const HWND hWnd);
     HWND GethWnd();
-    int GetWidth();
-    int GetHeight();
-    std::wstring GetName();
+    void Initialize();
+    void Update();
+    void Terminate();
+
+// ------------------------ static ------------------------
 
 public:
-    void Update();
+    static int Run(WinApplication& app, HINSTANCE hInstance, const wchar_t* className, int nCmdShow);
+protected:
+    static LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+    static void InitializeApplication(WinApplication& app);
+    static bool UpdateApplication(WinApplication& app);
+    static void TerminateApplication(WinApplication& app);
 };
-
-namespace Application
-{
-    int Run(WinApplication& app, HINSTANCE hInstance, const wchar_t* className, int nCmdShow);
-    LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
-
-    void InitializeApplication(WinApplication& app);
-    bool UpdateApplication(WinApplication& app);
-    void TerminateApplication(WinApplication& app);
-}
