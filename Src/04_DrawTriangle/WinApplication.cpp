@@ -1,5 +1,19 @@
 #include "WinApplication.h"
 
+WinApplication::WinApplication()
+{
+    Context = new D3D12Context();
+    GfxDevice = new D3D12GfxDevice();
+}
+
+WinApplication::~WinApplication()
+{
+    delete Context;
+    Context = nullptr;
+    delete GfxDevice;
+    GfxDevice = nullptr;
+}
+
 void WinApplication::SethWnd(const HWND hWnd)
 {
     _hWnd = hWnd;
@@ -12,6 +26,7 @@ HWND WinApplication::GethWnd()
 
 void WinApplication::Initialize()
 {
+
 }
 
 void WinApplication::Update()

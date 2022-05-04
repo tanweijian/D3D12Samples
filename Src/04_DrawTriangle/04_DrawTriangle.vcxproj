@@ -17,7 +17,7 @@
     <ClCompile Include="WinApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ThirdParty\spdlog\spdlog.vcxproj">
+    <ProjectReference Include="..\..\ThirdParty\spdlog\spdlog.vcxproj">
       <Project>{dc9dc88b-4a96-4770-a228-15095a10f2dc}</Project>
     </ProjectReference>
   </ItemGroup>

@@ -3,16 +3,26 @@
 #include <string>
 #include <Windows.h>
 
+#include "D3D12Context.h"
+#include "D3D12GfxDevice.h"
+
 class WinApplication
 {
 private:
     // propertice
     HWND _hWnd = nullptr;
 public:
+    // constructor
+    WinApplication();
+    ~WinApplication();
     // propertice
     int Width = 1280;
     int Height = 720;
     std::wstring Name;
+
+    D3D12Context* Context;
+    D3D12GfxDevice* GfxDevice;
+
     // function
     void SethWnd(const HWND hWnd);
     HWND GethWnd();
@@ -20,8 +30,7 @@ public:
     void Update();
     void Terminate();
 
-// ------------------------ static ------------------------
-
+    // ------------------------ static ------------------------
 public:
     static int Run(WinApplication& app, HINSTANCE hInstance, const wchar_t* className, int nCmdShow);
 protected:
@@ -29,4 +38,5 @@ protected:
     static void InitializeApplication(WinApplication& app);
     static bool UpdateApplication(WinApplication& app);
     static void TerminateApplication(WinApplication& app);
+    // --------------------------------------------------------
 };
