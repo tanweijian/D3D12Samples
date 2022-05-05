@@ -3,7 +3,7 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="D3D12GfxDevice.cpp" />
-    <ClCompile Include="D3D12Context.cpp" />
+    <ClCompile Include="D3D12GfxContext.cpp" />
     <ClCompile Include="WinApplication.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -16,7 +16,7 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="D3D12GfxDevice.h" />
-    <ClInclude Include="D3D12Context.h" />
+    <ClInclude Include="D3D12GfxContext.h" />
     <ClInclude Include="..\..\Include\d3dx12.h">
       <Filter>Include</Filter>
     </ClInclude>

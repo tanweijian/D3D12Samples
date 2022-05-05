@@ -1,17 +1,23 @@
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl/client.h>
+
 #include "WinApplication.h"
 
-WinApplication::WinApplication()
+using namespace Microsoft::WRL;
+
+WinApplication::WinApplication(int width, int height, std::wstring title)
 {
-    Context = new D3D12Context();
-    GfxDevice = new D3D12GfxDevice();
+    _width = width;
+    _height = height;
+    _title = title;
+    _gfxDevice = new D3D12GfxDevice();
 }
 
 WinApplication::~WinApplication()
 {
-    delete Context;
-    Context = nullptr;
-    delete GfxDevice;
-    GfxDevice = nullptr;
+    delete _gfxDevice;
+    _gfxDevice = nullptr;
 }
 
 void WinApplication::SethWnd(const HWND hWnd)
@@ -19,14 +25,37 @@ void WinApplication::SethWnd(const HWND hWnd)
     _hWnd = hWnd;
 }
 
-HWND WinApplication::GethWnd()
+HWND WinApplication::GethWnd() const
 {
     return _hWnd;
 }
 
-void WinApplication::Initialize()
+bool WinApplication::Initialize()
 {
+    UINT dxgiFactoryFlags = 0;
+#if _DEBUG
+    ComPtr<ID3D12Debug> debugLayer;
+    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugLayer))))
+    {
+        debugLayer->EnableDebugLayer();
+        dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
+    }
+    else
+    {
+        return false;
+    }
+#endif
 
+    ComPtr<IDXGIFactory> dxgiFactory;
+    if (SUCCEEDED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&dxgiFactory))))
+    {
+
+    }
+    else
+    {
+        return false;
+    }
+    return true;
 }
 
 void WinApplication::Update()
@@ -39,7 +68,7 @@ void WinApplication::Terminate()
 
 // ------------------------ static ------------------------
 
-int WinApplication::Run(WinApplication& app, HINSTANCE hInstance, const wchar_t* className, int nCmdShow)
+int WinApplication::Run(WinApplication* app, HINSTANCE hInstance, int nCmdShow)
 {
     // Register class
     WNDCLASSEX wcex{};
@@ -53,14 +82,14 @@ int WinApplication::Run(WinApplication& app, HINSTANCE hInstance, const wchar_t*
     wcex.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wcex.hbrBackground = (HBRUSH)(COLOR_WINDOW + 1);
     wcex.lpszMenuName = nullptr;
-    wcex.lpszClassName = className;
+    wcex.lpszClassName = app->GetTitle();
     wcex.hIconSm = LoadIcon(hInstance, IDI_APPLICATION);
     RegisterClassEx(&wcex);
 
-    int width = app.Width;
-    int height = app.Height;
-    HWND hWnd = CreateWindow(className, className, WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
-    app.SethWnd(hWnd);
+    int width = app->GetWidth();
+    int height = app->GetHeight();
+    HWND hWnd = CreateWindow(app->GetTitle(), app->GetTitle(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
+    app->SethWnd(hWnd);
 
     InitializeApplication(app);
 
@@ -109,19 +138,19 @@ LRESULT WinApplication::WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM l
     return 0;
 }
 
-void WinApplication::InitializeApplication(WinApplication& app)
+bool WinApplication::InitializeApplication(WinApplication* app)
 {
-    app.Initialize();
+    return app->Initialize();
 }
 
 
-bool WinApplication::UpdateApplication(WinApplication& app)
+bool WinApplication::UpdateApplication(WinApplication* app)
 {
-    app.Update();
+    app->Update();
     return true;
 }
 
-void WinApplication::TerminateApplication(WinApplication& app)
+void WinApplication::TerminateApplication(WinApplication* app)
 {
-    app.Terminate();
+    app->Terminate();
 }
