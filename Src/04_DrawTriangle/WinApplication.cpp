@@ -3,6 +3,7 @@
 #include <wrl/client.h>
 
 #include "WinApplication.h"
+#include "spdlog/spdlog.h"
 
 using namespace Microsoft::WRL;
 
@@ -70,6 +71,10 @@ void WinApplication::Terminate()
 
 int WinApplication::Run(WinApplication* app, HINSTANCE hInstance, int nCmdShow)
 {
+#if _DEBUG
+    AllocConsole();
+#endif
+
     // Register class
     WNDCLASSEX wcex{};
     wcex.cbSize = sizeof(WNDCLASSEX);
@@ -92,7 +97,7 @@ int WinApplication::Run(WinApplication* app, HINSTANCE hInstance, int nCmdShow)
     app->SethWnd(hWnd);
 
     InitializeApplication(app);
-
+    SPDLOG_INFO("测试");
     ShowWindow(hWnd, nCmdShow);
 
     do
@@ -116,6 +121,10 @@ int WinApplication::Run(WinApplication* app, HINSTANCE hInstance, int nCmdShow)
     } while (UpdateApplication(app));
 
     TerminateApplication(app);
+
+#if _DEBUG
+    FreeConsole();
+#endif
 
     return 0;
 }

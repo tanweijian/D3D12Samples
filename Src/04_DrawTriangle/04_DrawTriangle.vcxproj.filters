@@ -21,5 +21,8 @@
       <Filter>Include</Filter>
     </ClInclude>
     <ClInclude Include="WinApplication.h" />
+    <ClInclude Include="Macros.h">
+      <Filter>Include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

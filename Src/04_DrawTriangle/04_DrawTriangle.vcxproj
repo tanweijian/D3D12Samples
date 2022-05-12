@@ -26,6 +26,7 @@
     <ClInclude Include="..\..\Include\Utils.h" />
     <ClInclude Include="D3D12GfxContext.h" />
     <ClInclude Include="D3D12GfxDevice.h" />
+    <ClInclude Include="Macros.h" />
     <ClInclude Include="WinApplication.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
