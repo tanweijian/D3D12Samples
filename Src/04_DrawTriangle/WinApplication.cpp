@@ -9,9 +9,9 @@ using namespace Microsoft::WRL;
 
 WinApplication::WinApplication(int width, int height, std::wstring title)
 {
-    _width = width;
-    _height = height;
-    _title = title;
+    mWidth = width;
+    mHeight = height;
+    mTitle = title;
     _gfxDevice = new D3D12GfxDevice();
 }
 
@@ -91,8 +91,8 @@ int WinApplication::Run(WinApplication* app, HINSTANCE hInstance, int nCmdShow)
     wcex.hIconSm = LoadIcon(hInstance, IDI_APPLICATION);
     RegisterClassEx(&wcex);
 
-    int width = app->GetWidth();
-    int height = app->GetHeight();
+    int width = app->mWidth;
+    int height = app->mHeight;
     HWND hWnd = CreateWindow(app->GetTitle(), app->GetTitle(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
     app->SethWnd(hWnd);
 

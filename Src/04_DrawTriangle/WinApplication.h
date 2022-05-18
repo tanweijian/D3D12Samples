@@ -13,11 +13,13 @@ private:
     D3D12GfxDevice* _gfxDevice;
 
 public:
+    int mWidth = 1280;
+    int mHeight = 720;
+    std::wstring mTitle;
+
+public:
     WinApplication(int width, int height, std::wstring title);
     ~WinApplication();
-    int _width = 1280;
-    int _height = 720;
-    std::wstring _title;
 
     void SethWnd(const HWND hWnd);
     HWND GethWnd() const;
@@ -25,9 +27,7 @@ public:
     void Update();
     void Terminate();
 
-    int GetWidth() const                    { return _width; }
-    int GetHeight() const                   { return _height; }
-    const wchar_t* GetTitle() const         { return _title.c_str(); }
+    const wchar_t* GetTitle() const         { return mTitle.c_str(); }
     D3D12GfxDevice* GetGfxDevice() const    { return _gfxDevice; }
 
     // ------------------------ static ------------------------
