@@ -3,7 +3,6 @@
 #include <string>
 #include <Windows.h>
 
-#include "D3D12GfxContext.h"
 #include "D3D12GfxDevice.h"
 
 class WinApplication

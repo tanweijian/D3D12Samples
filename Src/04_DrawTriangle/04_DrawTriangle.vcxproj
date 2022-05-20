@@ -11,7 +11,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D3D12GfxContext.cpp" />
     <ClCompile Include="D3D12GfxDevice.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="WinApplication.cpp" />
@@ -24,7 +23,6 @@
   <ItemGroup>
     <ClInclude Include="..\..\Include\d3dx12.h" />
     <ClInclude Include="..\..\Include\Utils.h" />
-    <ClInclude Include="D3D12GfxContext.h" />
     <ClInclude Include="D3D12GfxDevice.h" />
     <ClInclude Include="Macros.h" />
     <ClInclude Include="WinApplication.h" />

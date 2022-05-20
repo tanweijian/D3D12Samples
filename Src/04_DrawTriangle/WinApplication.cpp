@@ -2,8 +2,8 @@
 #include <dxgi1_6.h>
 #include <wrl/client.h>
 
-#include "WinApplication.h"
 #include "spdlog/spdlog.h"
+#include "WinApplication.h"
 
 using namespace Microsoft::WRL;
 
@@ -33,30 +33,7 @@ HWND WinApplication::GethWnd() const
 
 bool WinApplication::Initialize()
 {
-    UINT dxgiFactoryFlags = 0;
-#if _DEBUG
-    ComPtr<ID3D12Debug> debugLayer;
-    if (SUCCEEDED(D3D12GetDebugInterface(IID_PPV_ARGS(&debugLayer))))
-    {
-        debugLayer->EnableDebugLayer();
-        dxgiFactoryFlags |= DXGI_CREATE_FACTORY_DEBUG;
-    }
-    else
-    {
-        return false;
-    }
-#endif
-
-    ComPtr<IDXGIFactory> dxgiFactory;
-    if (SUCCEEDED(CreateDXGIFactory2(dxgiFactoryFlags, IID_PPV_ARGS(&dxgiFactory))))
-    {
-
-    }
-    else
-    {
-        return false;
-    }
-    return true;
+    return _gfxDevice->Initialize();
 }
 
 void WinApplication::Update()
@@ -97,7 +74,7 @@ int WinApplication::Run(WinApplication* app, HINSTANCE hInstance, int nCmdShow)
     app->SethWnd(hWnd);
 
     InitializeApplication(app);
-    SPDLOG_INFO("测试");
+
     ShowWindow(hWnd, nCmdShow);
 
     do

@@ -1,14 +1,22 @@
 #pragma once
 
-#include "D3D12GfxContext.h"
+#include <d3d12.h>
+#include <dxgi1_6.h>
+#include <wrl/client.h>
+
+using namespace Microsoft::WRL;
 
 class D3D12GfxDevice
 {
 private:
-    D3D12GfxContext* _gfxContext;
+    UINT _rtvDescriptorSize;
+    UINT _dsvDescriptorSize;
+    UINT _cvb_srv_uavDescriptorSize;
 
 public:
-    D3D12GfxDevice();
-    ~D3D12GfxDevice();
-    D3D12GfxContext* GetGfxContext();
+    ComPtr<ID3D12Device> mDevice;
+    ComPtr<ID3D12Fence> mFence;
+
+    bool Initialize();
+    HRESULT GetHardwareAdapter(IDXGIFactory5* factory, IDXGIAdapter1** ppAdapter, bool highPerformance);
 };
