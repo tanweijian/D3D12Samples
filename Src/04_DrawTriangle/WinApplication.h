@@ -12,8 +12,8 @@ private:
     D3D12GfxDevice* _gfxDevice;
 
 public:
-    int mWidth = 1280;
-    int mHeight = 720;
+    UINT mWidth = 1280;
+    UINT mHeight = 720;
     std::wstring mTitle;
 
 public:

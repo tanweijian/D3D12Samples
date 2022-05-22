@@ -33,7 +33,7 @@ HWND WinApplication::GethWnd() const
 
 bool WinApplication::Initialize()
 {
-    return _gfxDevice->Initialize();
+    return _gfxDevice->Initialize(mWidth, mHeight, _hWnd);
 }
 
 void WinApplication::Update()
@@ -48,7 +48,7 @@ void WinApplication::Terminate()
 
 int WinApplication::Run(WinApplication* app, HINSTANCE hInstance, int nCmdShow)
 {
-#if _DEBUG
+#if defined(DEBUG) || defined(_DEBUG)
     AllocConsole();
 #endif
 
@@ -73,7 +73,10 @@ int WinApplication::Run(WinApplication* app, HINSTANCE hInstance, int nCmdShow)
     HWND hWnd = CreateWindow(app->GetTitle(), app->GetTitle(), WS_OVERLAPPEDWINDOW, CW_USEDEFAULT, CW_USEDEFAULT, width, height, nullptr, nullptr, hInstance, nullptr);
     app->SethWnd(hWnd);
 
-    InitializeApplication(app);
+    if (!InitializeApplication(app))
+    {
+        return 0;
+    }
 
     ShowWindow(hWnd, nCmdShow);
 
@@ -99,7 +102,7 @@ int WinApplication::Run(WinApplication* app, HINSTANCE hInstance, int nCmdShow)
 
     TerminateApplication(app);
 
-#if _DEBUG
+#if defined(DEBUG) || defined(_DEBUG)
     FreeConsole();
 #endif
 

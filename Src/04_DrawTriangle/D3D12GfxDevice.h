@@ -14,9 +14,14 @@ private:
     UINT _cvb_srv_uavDescriptorSize;
 
 public:
-    ComPtr<ID3D12Device> mDevice;
     ComPtr<ID3D12Fence> mFence;
+    ComPtr<ID3D12Device> mDevice;
+    ComPtr<IDXGISwapChain1> mSwapChain;
+    ComPtr<ID3D12CommandQueue> mCommandQueue;
+    ComPtr<ID3D12CommandAllocator> mCommandAllocator;
+    ComPtr<ID3D12GraphicsCommandList> mCommandList;
 
-    bool Initialize();
+    bool Initialize(UINT width, UINT height, HWND hwnd);
     HRESULT GetHardwareAdapter(IDXGIFactory5* factory, IDXGIAdapter1** ppAdapter, bool highPerformance);
+    HRESULT CreateSwapChain(IDXGIFactory5* factory, UINT width, UINT height, HWND hwnd);
 };

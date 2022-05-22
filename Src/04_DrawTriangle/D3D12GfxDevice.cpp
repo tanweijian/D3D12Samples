@@ -1,6 +1,6 @@
 #include "D3D12GfxDevice.h"
 
-bool D3D12GfxDevice::Initialize()
+bool D3D12GfxDevice::Initialize(UINT width, UINT height, HWND hwnd)
 {
     HRESULT hr = E_FAIL;
     UINT dxgiFactoryFlags = 0;
@@ -50,6 +50,36 @@ bool D3D12GfxDevice::Initialize()
     _rtvDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
     _dsvDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_DSV);
     _cvb_srv_uavDescriptorSize = mDevice->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV);
+
+    D3D12_COMMAND_QUEUE_DESC queueDesc = {};
+    queueDesc.Type = D3D12_COMMAND_LIST_TYPE_DIRECT;
+    queueDesc.Flags = D3D12_COMMAND_QUEUE_FLAG_NONE;
+    hr = mDevice->CreateCommandQueue(&queueDesc, IID_PPV_ARGS(&mCommandQueue));
+    if (FAILED(hr))
+    {
+        return false;
+    }
+    hr = mDevice->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&mCommandAllocator));
+    if (FAILED(hr))
+    {
+        return false;
+    }
+    hr = mDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, mCommandAllocator.Get(), nullptr, IID_PPV_ARGS(&mCommandList));
+    if (FAILED(hr))
+    {
+        return false;
+    }
+    hr = mCommandList->Close();
+    if (FAILED(hr))
+    {
+        return false;
+    }
+
+    hr = CreateSwapChain(dxgiFactory.Get(), width, height, hwnd);
+    if (FAILED(hr))
+    {
+        return false;
+    }
 
     return true;
 }
@@ -120,5 +150,25 @@ HRESULT D3D12GfxDevice::GetHardwareAdapter(IDXGIFactory5* factory, IDXGIAdapter1
         }
     }
 
+    return hr;
+}
+
+HRESULT D3D12GfxDevice::CreateSwapChain(IDXGIFactory5* factory, UINT width, UINT height, HWND hwnd)
+{
+    if (mSwapChain != nullptr)
+    {
+        mSwapChain.Reset();
+    }
+    DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+    swapChainDesc.Width = width;
+    swapChainDesc.Height = height;
+    swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    swapChainDesc.BufferCount = 2;
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
+    swapChainDesc.SampleDesc.Count = 1;
+    swapChainDesc.SampleDesc.Quality = 0;
+    HRESULT hr = E_FAIL;
+    hr = factory->CreateSwapChainForHwnd(mCommandQueue.Get(), hwnd, &swapChainDesc, nullptr, nullptr, &mSwapChain);
     return hr;
 }
