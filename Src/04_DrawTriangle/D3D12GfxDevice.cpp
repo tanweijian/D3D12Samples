@@ -103,6 +103,7 @@ HRESULT D3D12GfxDevice::GetHardwareAdapter(IDXGIFactory5* factory, IDXGIAdapter1
             }
             adapterIndex++;
             DXGI_ADAPTER_DESC1 desc;
+            memset(&desc, 0, sizeof(desc));
             hr = adapter->GetDesc1(&desc);
             if (FAILED(hr))
             {
@@ -132,6 +133,7 @@ HRESULT D3D12GfxDevice::GetHardwareAdapter(IDXGIFactory5* factory, IDXGIAdapter1
             }
             adapterIndex++;
             DXGI_ADAPTER_DESC1 desc;
+            memset(&desc, 0, sizeof(desc));
             hr = adapter->GetDesc1(&desc);
             if (FAILED(hr))
             {
@@ -155,19 +157,20 @@ HRESULT D3D12GfxDevice::GetHardwareAdapter(IDXGIFactory5* factory, IDXGIAdapter1
 
 HRESULT D3D12GfxDevice::CreateSwapChain(IDXGIFactory5* factory, UINT width, UINT height, HWND hwnd)
 {
-    if (mSwapChain != nullptr)
-    {
-        mSwapChain.Reset();
-    }
-    DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
+    DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
+    memset(&swapChainDesc, 0, sizeof(swapChainDesc));
     swapChainDesc.Width = width;
     swapChainDesc.Height = height;
     swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
     swapChainDesc.BufferCount = 2;
-    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+    swapChainDesc.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH;
+    swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT | DXGI_USAGE_SHADER_INPUT;
     swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
     swapChainDesc.SampleDesc.Count = 1;
     swapChainDesc.SampleDesc.Quality = 0;
+    swapChainDesc.Stereo = false;
+    swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
+    swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
     HRESULT hr = E_FAIL;
     hr = factory->CreateSwapChainForHwnd(mCommandQueue.Get(), hwnd, &swapChainDesc, nullptr, nullptr, &mSwapChain);
     return hr;
